@@ -1,15 +1,35 @@
 ﻿@model IEnumerable<MusicStore.Models.Artist>
 
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+
+	//Alfabet aanmaken
+	string[] alfabet = new string[]
+	{
+		"A","B","C","D","E","F","G","H","I","J",
+		"K","L","M","N","O","P","Q","R","S","T",
+		"U","V","W","X","Y","Z"
+	};
 }
 
-<h2>Index</h2>
+<h2>Index_Overzicht artiesten vanuit ADMIN</h2>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<hr />
+@foreach(string letter in alfabet)
+{
+	<a asp-area="Admin" asp-controller="Artists" asp-action="Index" asp-route-letter="@letter">
+		@letter
+	</a>
+}
+
+<hr/>
+
 <table class="table">
     <thead>
         <tr>

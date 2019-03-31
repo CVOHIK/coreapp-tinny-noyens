@@ -6,6 +6,7 @@ using MusicStore.Data;
 using MusicStore.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using TNS_Musicstore.ViewModels;
 
 namespace TNS_Musicstore.Areas.Admin
 {
@@ -21,14 +22,46 @@ namespace TNS_Musicstore.Areas.Admin
         }
 
         // GET: Admin/Albums
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? GenreID, int? ArtistID, string Keyword)
         {
-            var storeContext = _context.Albums.Include(a => a.Artist).Include(a => a.Genre);
-            return View(await storeContext.ToListAsync());
-        }
 
-        // GET: Admin/Albums/Details/5
-        public async Task<IActionResult> Details(int? id)
+			// nieuw lijst albums aanmaken
+			// ofwel zijn parameters leeg ofwel is parameter ingevuld 
+			var albums = _context.Albums
+				//GenreID leeg of waarde id meegegeven en gelijk aan 
+				.Where(a => (GenreID == null || GenreID == 0) || a.GenreID == GenreID)
+				//ArtistID leeg of waarde meegegeven en gelijk aan
+				.Where(a => (ArtistID == null || ArtistID == 0) || a.ArtistID == ArtistID)
+				//Titel ingevuld??
+				.Where(a => Keyword == null || a.Title.Contains(Keyword))
+				.OrderBy(a => a.Title);
+
+			//Nieuwe modelview maken
+			var listAlbumsVM = new ListAlbumsVM();
+
+			//lijsten maken
+			listAlbumsVM.Albums = await albums.ToListAsync();
+
+			//selectielijst
+			listAlbumsVM.Genres = new SelectList
+				(await _context.Genres.OrderBy(g => g.Name).ToListAsync(), "GenreID", "Name");
+
+			listAlbumsVM.Artists = new SelectList
+				(await _context.Artists.OrderBy(art => art.Name).ToListAsync(), "ArtistID", "Name");
+
+			//lijsten gemaakt
+			// view teruggeven
+			return View(listAlbumsVM);
+
+			//ORIGINELE CODE
+			//var storeContext = _context.Albums.Include(a => a.Artist).Include(a => a.Genre);
+			//return View(await storeContext.ToListAsync());
+
+			//
+		}
+
+		// GET: Admin/Albums/Details/5
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {

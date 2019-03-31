@@ -20,9 +20,17 @@ namespace TNS_Musicstore.Areas.Admin
         }
 
         // GET: Admin/Artists
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string letter)
         {
-            return View(await _context.Artists.ToListAsync());
+			//aanpassen door een letter mee te geven
+
+			var artists = from a in _context.Artists.OrderBy(a => a.Name) select a;
+
+			if (letter !=null && letter != "")
+			{
+				artists = from a in artists.Where(a => a.Name.Substring(0, 1) == letter) select a;
+			}
+            return View(/*await _context.Artists.ToListAsync()*/artists);
         }
 
         // GET: Admin/Artists/Details/5

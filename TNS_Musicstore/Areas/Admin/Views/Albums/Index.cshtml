@@ -1,34 +1,48 @@
-﻿@model IEnumerable<MusicStore.Models.Album>
+﻿@model TNS_Musicstore.ViewModels.ListAlbumsVM
 
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+	Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+	ViewData["Title"] = "Index";
 }
 
-<h2>Index Area Admin _view Albums_index</h2>
+<h2>Index_Overzicht albums vanuit ADMIN</h2>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 <hr />
+<h3>FILTER ALBUMS OP</h3>
+<form asp-area="Admin" asp-controller="Albums" asp-action="Index" method="get">
+	<label asp-for="GenreID">@Html.DisplayNameFor(model => model.Albums[0].Genre)</label>
+	<select asp-for="GenreID" asp-items="Model.Genres" onchange="this.form.submit()">
+		<option value="0">--Select a genre--</option></select>
+	<br />
+	<label asp-for="ArtistID">@Html.DisplayNameFor(model=> model.Albums[0].Artist)</label>
+	<select asp-for="ArtistID" asp-items="Model.Artists" onchange="this.form.submit()">
+		<option value="0">--Select an artist--</option></select>
+	<br />
+	<label asp-for="Keyword">@Html.DisplayNameFor(model=> model.Keyword)</label>
+	<input asp-for="Keyword" type="text" onchange="this.form.submit()"/>
+	<hr/>
 
+</form>
 <table class="table">
     <thead>
 		<tr>
 			<th>
-				@Html.DisplayNameFor(model => model.Artist)
+				@Html.DisplayNameFor(model => model.Albums[0].Artist)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Genre)
+				@Html.DisplayNameFor(model => model.Albums[0].Genre)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.Title)
+				@Html.DisplayNameFor(model => model.Albums[0].Title)
 			</th>	
 			@*<th></th>*@
 		</tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Albums) {
 		<tr>
 			<td>
 				@Html.DisplayFor(modelItem => item.Artist.Name)
