@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TNS_Musicstore.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MusicStore.Data;
+using MusicStore.Models;
+using TNS_Musicstore.Data;
 
 namespace TNS_Musicstore
 {
@@ -34,17 +31,38 @@ namespace TNS_Musicstore
 				options.MinimumSameSitePolicy = SameSiteMode.None;
 			});
 
+			//Storecontext toevoegen
+			services.AddDbContext<StoreContext>(options =>
+			   options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
 			services.AddDbContext<ApplicationDbContext>(options =>
 				options.UseSqlServer(
 					Configuration.GetConnectionString("DefaultConnection")));
-			services.AddDefaultIdentity<IdentityUser>()
-				.AddEntityFrameworkStores<ApplicationDbContext>();
+
+			//Deze regels zorgen ervoor dat roles niet werken
+			//services.AddDefaultIdentity<IdentityUser>()
+			//	.AddEntityFrameworkStores<ApplicationDbContext>();
+
+			services.AddIdentity<IdentityUser, IdentityRole>()
+		   .AddEntityFrameworkStores<ApplicationDbContext>()
+		   .AddDefaultUI()
+		   .AddDefaultTokenProviders();
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+			services.Configure<IdentityOptions>(options =>
+			{
+				// Password settings
+				options.Password.RequireDigit = false;
+				options.Password.RequiredLength = 3;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequireLowercase = false;
+			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, StoreContext context)
 		{
 			if (env.IsDevelopment())
 			{
@@ -66,9 +84,15 @@ namespace TNS_Musicstore
 			app.UseMvc(routes =>
 			{
 				routes.MapRoute(
+					name: "areaRoute",
+					template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+				routes.MapRoute(
 					name: "default",
 					template: "{controller=Home}/{action=Index}/{id?}");
 			});
+			DbInitializer.Initialize(context);
+
 		}
 	}
 }

@@ -1,20 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MusicStore.Data;
+using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using TNS_Musicstore.Models;
 
 namespace TNS_Musicstore.Controllers
 {
 	public class HomeController : Controller
 	{
-		public IActionResult Index()
+
+		private readonly StoreContext _context;
+
+		public HomeController(StoreContext context)
 		{
-			return View();
+			_context = context;
 		}
 
+		public IActionResult Index()
+		{
+			var albums = _context.Albums.OrderBy(a => Guid.NewGuid()).Take(6);
+			return View(albums.ToList());
+		}
+
+		[Authorize (Roles = "admin")]
 		public IActionResult About()
 		{
 			ViewData["Message"] = "Your application description page.";
