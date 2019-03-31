@@ -40,18 +40,27 @@ namespace TNS_Musicstore.Controllers
 			return View(album);
 		}
 
-		public IActionResult ListAlbums(int? genreID)
+		public IActionResult ListAlbums(int? id)
 		{
-			var albums = from a in _context.Genres.OrderBy(a => a.Description).Include(g => g.GenreID)
-							select a;
-
-
-			//dan controleren of er een id wordt meegegeven
-			if (genreID != null && genreID != 0)
+			var albums = new List<Album>();
+			if (id!=null && id != 0 )
 			{
-				albums = albums.Where(a => a.GenreID == genreID);
+				albums = _context.Albums.Include(a => a.Genre) //genre include
+										.Where(a => a.GenreID == id) // meegegeven id vgl met album id
+										.OrderBy(a => a.Title) // sorteren op titel
+										.ToList();//lijst maken
 			}
 			return View(albums);
+			//var albums = from a in _context.Genres.OrderBy(a => a.Description).Include(g => g.GenreID)
+			//				select a;
+
+
+			////dan controleren of er een id wordt meegegeven
+			//if (genreID != null && genreID != 0)
+			//{
+			//	albums = albums.Where(a => a.GenreID == genreID);
+			//}
+			//return View(albums);
 		}
 		
 	}
