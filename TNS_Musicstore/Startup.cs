@@ -59,6 +59,7 @@ namespace TNS_Musicstore
 				options.Password.RequireUppercase = false;
 				options.Password.RequireLowercase = false;
 			});
+
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
