@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MusicStore.Data;
 using MusicStore.Models;
 using TNS_Musicstore.Data;
-
+//test
 namespace TNS_Musicstore
 {
 	public class Startup
